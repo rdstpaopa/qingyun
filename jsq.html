@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)http://127.0.0.1:8020/html_css_js/calputer/calputer.html?__hbt=1553045696329 -->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<!--网页描述信息。搜索引擎会把content的内容作为网页的描述被用户搜索到。需要限制为150字以内。否则会被搜索引擎截断-->
+		<meta name="description" content="本页面演示使用html和css和js的基础知识使用">
+		<!--网页的关键字。有时会被搜索引擎忽略。但是正确的设置有时会提升网页的排名-->
+		<meta name="keywords" content="js,html,css,计算器,calputer" <title="">
+		<style type="text/css">
+
+			*{
+				margin: 0;
+				padding: 0;
+			}
+
+/*计算器主容器样式*/
+			.box{
+				width: 400px;
+				height: 500px;
+				border: darkgray solid 1px;
+				margin-left: 5px;
+			}
+
+/*计算器屏幕部分容器样式*/
+			div.top{
+				width: 100%;
+				height: 20%;
+				border-bottom: black solid 1px;
+			}
+
+
+/*计算器屏幕的输入框样式*/
+			div.top > input {
+				width: 98%;
+				height: 82%;
+				border: 0;
+				color: red;
+				font-size: 70px;
+				text-align: right;
+				outline: 0px;
+			}
+
+/*计算器按键区样式*/
+			div.bottom{
+				height: 80%;
+			}
+
+/*按键区。数字区样式*/
+			div.bottom .bottom_left{
+				width: 75%;
+				border-right: black solid 1px;
+				height: 100%;
+				float: left;
+			}
+			div.bottom .bottom_left>button {
+				margin: 5px auto auto 5px;
+ 				width: 30%;
+				height: 23%;
+			}
+
+/*按键区。运算符区样式*/
+			div.bottom .bottom_right{
+				width: 23%;
+				height: 100%;
+				float: left;
+				text-align: center;
+			}
+
+			div.bottom .bottom_right button{
+				width: 80%;
+				height: 18%;
+				margin-top: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		好难计算器
+		<!--引入css文件。rel="stylesheet"必不可少。href使用了相对路径。当前目录下的css目录下的calputer.css文件.
+			css文件的引入应该位于head标签内
+		-->
+		<!-- <link rel="stylesheet" type="text/css" href="./calputer_files/calputer.css"> -->
+	
+	
+		<!--用作计算器界面的主容器-->
+		<div class="box">
+			<div class="top">
+				<!--文本框用于显示输入的数字和显示计算结果
+					禁用避免用户使用键盘输入
+				-->
+			<input type="text" id="txtNum" disabled="disabled" value="0">
+		</div>
+			<div class="bottom">
+				<div class="bottom_left">
+					<button type="button" id="btnC" onclick="PressButton(&#39;c&#39;)">C</button>
+					<button type="button" id="btn0" onclick="PressButton(0)">0</button>	
+				<button type="button" id="btnDot" onclick="PressButton(&#39;.&#39;)">.</button>	
+					<button type="button" id="btn1" onclick="PressButton(1)">1</button>	
+					<button type="button" id="btn2" onclick="PressButton(2)">2</button>	
+					<button type="button" id="btn3" onclick="PressButton(3)">3</button>	
+					<button type="button" id="btn4" onclick="PressButton(4)">4</button>	
+					<button type="button" id="btn5" onclick="PressButton(5)">5</button>	
+					<button type="button" id="btn6" onclick="PressButton(6)">6</button>	
+					<button type="button" id="btn7" onclick="PressButton(7)">7</button>	
+					<button type="button" id="btn8" onclick="PressButton(8)">8</button>	
+					<button type="button" id="btn9" onclick="PressButton(9)">9</button>	
+				</div>
+				<div class="bottom_right">
+					<button type="button" id="btnJia" onclick="PressButton(&#39;+&#39;)">+</button>
+					<button type="button" id="btnJian" onclick="PressButton(&#39;-&#39;)">-</button>
+					<button type="button" id="btnCheng" onclick="PressButton(&#39;*&#39;)">*️</button>
+					<button type="button" id="btnChu" onclick="PressButton(&#39;/&#39;)">/</button>
+					<button type="button" id="btnResult" onclick="PressButton(&#39;=&#39;)">=</button>
+					
+				</div>
+				
+			</div>
+		</div>
+		<!--引入js脚本文件。src为文件地址。js文件的引入应位于body中的html代码之后-->
+		<script>
+			/*
++ * 本js文件用于处理calputer.html页面的计算器交互逻辑
++ * editor: kamihati 
++ * date: 2019-03-20
++ */
+
+// 用于记录当前按下的运算按钮。按=号之后重置为空字符串
+var nowKey = "";
+// 用于记录点击等号需要使用的运算符。若无则不运算
+var oldKey = "";
+// 用于临时存储文本框内容转换成的数字。按等号之后重置为0
+var leftNumber = 0;
+
+// 设置文本框内容的函数。减少代码量
+// content: 类型为字符串。要设置的文本内容 
+function SetInputText(content){
+	document.getElementById("txtNum").value = content;
+}
+
+// 向文本框追加字符串。减少代码量
+// content: 类型为字符串或数字。需要追加到文本框的内容
+function AddInputText(content){
+	document.getElementById("txtNum").value += content;
+}
+
+// 获取文本框内的字符串并转为浮点数
+function GetInputNumber(){
+	return parseFloat(document.getElementById("txtNum").value);
+}
+
+// 处理按下按钮需要执行的逻辑
+// num：0-9，小数点。c清除。+-*/  为运算符 ；  =号求值
+function PressButton(num){
+	console.log(num);
+	if(num == 'c'){
+		// 清除显示屏内容。重置为0
+		SetInputText("0");
+	}else if(num == "." || !isNaN(num)){
+		// 处理输入的小数点。或数字。
+		
+		// 点击运算符前直接追加.点击运算符后的输入直接替换。替换后转换为追加模式
+		if(nowKey == ""){
+			// 获取现在文本框内的数字
+			var nowNumber = GetInputNumber();
+			// 当文本框为0.则按下的小数点或数字替换掉0
+			if(nowNumber == 0){
+				SetInputText(num)
+			}else{
+				AddInputText(num)
+			}
+		}else{
+			// 点击运算符后点击按钮.先获取文本框的值转为浮点数再重置文本框
+			leftNumber = GetInputNumber();
+		    SetInputText(num);
+		    oldKey = nowKey;
+		    nowKey = "";
+		}
+		
+	}else {
+		// 点击的按钮不是=号则记录到当前按下的按钮变量
+		if(num != "="){
+		    	nowKey = num;
+		}else{
+			// 获取现在文本框内的数字
+			var nowNumber = GetInputNumber();
+			// 计算后设置文本框为计算结果
+			var result = 0;
+			console.log(leftNumber);
+			console.log(oldKey);
+			console.log(nowNumber);
+			console.log(num);
+			if( oldKey == "+"){
+				result = leftNumber + nowNumber;
+			}else if(oldKey == "-"){
+				result = leftNumber - nowNumber;
+			}else if(oldKey == "*"){
+				result = leftNumber * nowNumber;
+			}else if(oldKey == "/"){
+				result = leftNumber / nowNumber;;
+			}
+			if(result != parseInt(result)){
+				result = result.toFixed(8);
+			}
+			SetInputText(result);
+			// 把已按下的按钮清空
+			oldKey = "";
+			// 设置当前按下的按钮
+			nowKey = "="
+		 
+		}
+	}
+	
+}
+		</script>
+
+	
+
+</body>
+</html>
